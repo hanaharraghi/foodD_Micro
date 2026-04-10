@@ -26,5 +26,6 @@ public class DeliveryController {
     public Delivery update(@PathVariable Long id, @RequestBody Delivery d) { return service.update(id, d); }
 
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable Long id) { service.delete(id); }
+    public void delete(@PathVariable Long id) { service.delete(id);
+    }
 }
