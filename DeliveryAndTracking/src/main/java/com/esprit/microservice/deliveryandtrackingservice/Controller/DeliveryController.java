@@ -17,10 +17,12 @@ public class DeliveryController {
     public Delivery create(@RequestBody Delivery d) { return service.create(d); }
 
     @GetMapping
-    public List<Delivery> findAll() { return service.findAll(); }
+    public List<Delivery> findAll() { return service.findAll();
+    }
 
     @GetMapping("/{id}")
-    public Delivery findById(@PathVariable Long id) { return service.findById(id); }
+    public Delivery findById(@PathVariable Long id) { return service.findById(id);
+    }
 
     @PutMapping("/{id}")
     public Delivery update(@PathVariable Long id, @RequestBody Delivery d) { return service.update(id, d); }
