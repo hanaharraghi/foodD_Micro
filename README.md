@@ -45,11 +45,11 @@ API Gateway
 ----------------------------
 | Service Registry (Eureka) |
 ----------------------------
-   |        |        |
-   v        v        v
-Service A  Service B  Service C
-   |        |        |
- Database  Database  Database
+   |          |        |
+   v          v        v
+Service muen  user   Service order
+   |           |        |
+ musql         h2     wysql
 ```
 
 ---
