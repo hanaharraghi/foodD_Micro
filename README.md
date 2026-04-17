@@ -62,7 +62,7 @@ Service A  Service B  Service C
 | Microservices     | Spring Cloud           |
 | API Gateway       | Spring Cloud Gateway   |
 | Service Discovery | Netflix Eureka         |
-| Database          | MySQL / PostgreSQL     |
+| Database          | MySQL / mongo     |
 | Build Tool        | Maven                  |
 | Containerization  | Docker, Docker Compose |
 | Version Control   | Git & GitHub           |
