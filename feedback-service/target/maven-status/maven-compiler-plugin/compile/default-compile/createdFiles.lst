@@ -1,0 +1,8 @@
+com\example\feedbackservice\entity\Feedback.class
+com\example\feedbackservice\controller\FeedbackController.class
+com\example\feedbackservice\dto\UserDto.class
+com\example\feedbackservice\FeedbackServiceApplication.class
+com\example\feedbackservice\client\MenuClient.class
+com\example\feedbackservice\dto\MenuDto.class
+com\example\feedbackservice\repository\FeedbackRepository.class
+com\example\feedbackservice\client\UserClient.class

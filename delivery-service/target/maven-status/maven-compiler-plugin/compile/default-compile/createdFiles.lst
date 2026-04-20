@@ -1,0 +1,6 @@
+com\example\deliveryservice\dto\OrderDto.class
+com\example\deliveryservice\repository\DeliveryRepository.class
+com\example\deliveryservice\controller\DeliveryController.class
+com\example\deliveryservice\entity\Delivery.class
+com\example\deliveryservice\DeliveryServiceApplication.class
+com\example\deliveryservice\client\OrderClient.class

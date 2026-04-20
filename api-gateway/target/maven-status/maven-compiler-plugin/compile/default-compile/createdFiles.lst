@@ -1,0 +1,3 @@
+com\example\apigateway\ApiGatewayApplication.class
+com\example\apigateway\config\CorsConfig.class
+com\example\apigateway\config\SecurityConfig.class

@@ -1,0 +1,19 @@
+import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
+
+export class CreateBlogDto {
+  @IsString()
+  @IsNotEmpty()
+  title: string;
+
+  @IsString()
+  @IsNotEmpty()
+  content: string;
+
+  @IsString()
+  @IsNotEmpty()
+  author: string;
+
+  @IsString()
+  @IsOptional()
+  status?: string;
+}

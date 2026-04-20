@@ -1,0 +1,248 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: user_db
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./mysql-init:/docker-entrypoint-initdb.d
+    networks:
+      - microservices-net
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-proot"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+
+  mongo:
+    image: mongo:7
+    container_name: mongo
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - microservices-net
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.0.0
+    container_name: keycloak
+    restart: always
+    command:
+      - start-dev
+      - --spi-theme--static-max-age=-1
+      - --spi-theme--cache-themes=false
+      - --spi-theme--cache-templates=false
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+    ports:
+      - "8089:8080"
+    volumes:
+      - ./keycloak-themes:/opt/keycloak/themes
+    networks:
+      - microservices-net
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8080/realms/master"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+      start_period: 60s
+
+  eureka-server:
+    build:
+      context: ./eureka-server
+    container_name: eureka-server
+    restart: always
+    ports:
+      - "8761:8761"
+    networks:
+      - microservices-net
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8761/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 15
+      start_period: 30s
+
+  config-server:
+    build:
+      context: ./config-server
+    container_name: config-server
+    restart: always
+    depends_on:
+      eureka-server:
+        condition: service_healthy
+    ports:
+      - "8889:8888"
+    networks:
+      - microservices-net
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8888/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 15
+      start_period: 30s
+
+  user-service:
+    build:
+      context: ./user-service-mysql
+    container_name: user-service
+    restart: always
+    depends_on:
+      mysql:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy
+    ports:
+      - "8081:8081"
+    networks:
+      - microservices-net
+
+  menu-service:
+    build:
+      context: ./menu-service
+    container_name: menu-service
+    restart: always
+    depends_on:
+      mysql:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy
+    ports:
+      - "8083:8083"
+    networks:
+      - microservices-net
+
+  feedback-service:
+    build:
+      context: ./feedback-service
+    container_name: feedback-service
+    restart: always
+    depends_on:
+      mysql:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy
+    ports:
+      - "8084:8084"
+    networks:
+      - microservices-net
+
+  order-service:
+    build:
+      context: ./order-service
+    container_name: order-service
+    restart: always
+    depends_on:
+      eureka-server:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy
+    ports:
+      - "8086:8086"
+    volumes:
+      - order_h2_data:/data
+    networks:
+      - microservices-net
+
+  delivery-service:
+    build:
+      context: ./delivery-service
+    container_name: delivery-service
+    restart: always
+    depends_on:
+      eureka-server:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy
+    ports:
+      - "8085:8085"
+    volumes:
+      - delivery_h2_data:/data
+    networks:
+      - microservices-net
+
+  blog-service:
+    build:
+      context: ./blog-service
+    container_name: blog-service
+    restart: always
+    depends_on:
+      mongo:
+        condition: service_healthy
+    ports:
+      - "3001:3001"
+    networks:
+      - microservices-net
+
+  api-gateway:
+    build:
+      context: ./api-gateway
+    container_name: api-gateway
+    restart: always
+    depends_on:
+      eureka-server:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy
+      keycloak:
+        condition: service_started
+      user-service:
+        condition: service_started
+      menu-service:
+        condition: service_started
+      feedback-service:
+        condition: service_started
+      order-service:
+        condition: service_started
+      delivery-service:
+        condition: service_started
+      blog-service:
+        condition: service_started
+    ports:
+      - "8082:8082"
+    networks:
+      - microservices-net
+
+  react-front:
+    build:
+      context: ./react-front
+    container_name: react-front
+    restart: always
+    depends_on:
+      api-gateway:
+        condition: service_started
+    ports:
+      - "5173:4173"
+    networks:
+      - microservices-net
+
+networks:
+  microservices-net:
+    driver: bridge
+
+volumes:
+  mysql_data:
+  mongo_data:
+  order_h2_data:
+  delivery_h2_data:
