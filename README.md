@@ -32,3 +32,37 @@ This project is a microservices-based architecture for a food delivery platform.
 - Utilize message queues for asynchronous processing.
 
 ## Project Structure
+
+├── user-service
+├── restaurant-service
+├── order-service
+├── payment-service
+├── notification-service
+└── docker-compose.yml
+
+
+
+## Setup Instructions
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/hanaharraghi/foodD_Micro.git
+   cd foodD_Micro
+Build the Docker images:
+bash
+docker-compose build
+Run the services:
+bash
+docker-compose up
+APIs Documentation
+Refer to each service's folder for the specific API documentation. Swagger can be utilized for auto-generating API docs.
+
+Testing
+Write unit tests for individual services.
+Use Postman for integration testing.
+Contribution
+Fork the repository, create a new branch, and submit a pull request to contribute.
+License
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+Contact
+For any inquiries, please reach out to hanaharraghi@example.com.
